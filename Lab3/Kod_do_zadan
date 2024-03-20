@@ -1,0 +1,202 @@
+import sqlite3
+
+conn = sqlite3.connect('test.db')
+cursor = conn.cursor()
+print("Opened database successfully")
+
+create_table_queries = [  # tablica z komendami do tworzenia bazy danych
+    """
+    CREATE TABLE IF NOT EXISTS Uczelnia (
+        nazwa_uczelni TEXT PRIMARY KEY ,
+        adres TEXT ,
+        rektor TEXT
+    );
+    """,
+    """
+    CREATE TABLE IF NOT EXISTS Wydzial (
+        nazwa_wydzialu TEXT PRIMARY KEY ,
+        dziekan TEXT ,
+        uczelnia TEXT ,
+        FOREIGN KEY (uczelnia) REFERENCES Uczelnia(nazwa_uczelni)
+    );
+    """,
+    """
+    CREATE TABLE IF NOT EXISTS Wykladowca (
+        id INTEGER PRIMARY KEY,
+        imie TEXT,
+        nazwisko TEXT,
+        przedmiot TEXT,
+        wydzial TEXT,
+        FOREIGN KEY (wydzial) REFERENCES Wydzial(nazwa_wydzialu)
+    );
+    """,
+    """
+CREATE TABLE IF NOT EXISTS Przedmiot (
+    nazwa_przedmiotu TEXT PRIMARY KEY,
+    grupa_studentow TEXT,
+    wykladowca TEXT,
+    FOREIGN KEY (grupa_studentow) REFERENCES Grupa_studentow(id),
+    FOREIGN KEY (wykladowca) REFERENCES Wykladowca(id)
+);
+    """,
+    """
+CREATE TABLE IF NOT EXISTS Grupa_studentow (
+    id INTEGER PRIMARY KEY,
+    nazwa_grupy TEXT,
+    kierunek TEXT,
+    wydzial TEXT,
+    przedmiot TEXT,
+    FOREIGN KEY (wydzial) REFERENCES Wydzial(nazwa_wydzialu),
+    FOREIGN KEY (przedmiot) REFERENCES Przedmiot(nazwa_przedmiotu)
+);
+    """,
+    """
+    CREATE TABLE IF NOT EXISTS Student (
+        id INTEGER PRIMARY KEY ,
+        imie TEXT,
+        nazwisko TEXT,
+        grupa TEXT,
+        FOREIGN KEY (grupa) REFERENCES Grupa_studentow(id)
+    );
+    """,
+    """
+    CREATE TABLE IF NOT EXISTS Ocena (
+        id INTEGER PRIMARY KEY ,
+        stopien INT ,
+        student INT ,
+        przedmiot TEXT,
+        FOREIGN KEY (student) REFERENCES Student(id) ,
+        FOREIGN KEY (przedmiot) REFERENCES Przedmiot(nazwa_przedmiotu)
+    );
+    """
+]
+# Utworzenie bazy
+# for query in create_table_queries:
+#    cursor.execute(query)
+#####################################################################################################
+#Wstawianie rekordow
+uczelnia_wstaw = ("Akademia Marynarki Wojennej", "Inżyniera Jana Śmidowicza 69", "Tomasz Szubrycht")
+#cursor.execute("INSERT INTO Uczelnia VALUES (?, ?, ?)", uczelnia_wstaw)
+
+wydzial1_wstaw = ("Mechaniczno-Elektryczny", "Grzegorz GRZECZKA", "Akademia Marynarki Wojennej")
+wydzial2_wstaw = ("Nauk Humanistycznych", "Jerzy KOJKOŁ", "Akademia Marynarki Wojennej")
+#cursor.execute("INSERT INTO Wydzial VALUES (?, ?, ?)", wydzial1_wstaw)
+#cursor.execute("INSERT INTO Wydzial VALUES (?, ?, ?)", wydzial2_wstaw)
+
+wykladowca1_wstaw = (1, "Jan", "Kowalski", "Sztuczna Inteligencja", "Mechaniczno-Elektryczny")
+#.execute("INSERT INTO Wykladowca VALUES (?, ?, ?, ?, ?)", wykladowca1_wstaw)
+wykladowca2_wstaw = (2, "Adam", "Kownacki", "Matematyka", "Mechaniczno-Elektryczny")
+#cursor.execute("INSERT INTO Wykladowca VALUES (?, ?, ?, ?, ?)", wykladowca2_wstaw)
+wykladowca3_wstaw = (3, "Dariusz", "Bor", "Systemy Wbudowane", "Mechaniczno-Elektryczny")
+#cursor.execute("INSERT INTO Wykladowca VALUES (?, ?, ?, ?, ?)", wykladowca3_wstaw)
+wykladowca4_wstaw = (4, "Anna", "Pilch", "Prawo", "Nauk Humanistycznych")
+#cursor.execute("INSERT INTO Wykladowca VALUES (?, ?, ?, ?, ?)", wykladowca4_wstaw)
+wykladowca5_wstaw = (5, "Karol", "Kojtyla", "Historia", "Nauk Humanistycznych")
+#cursor.execute("INSERT INTO Wykladowca VALUES (?, ?, ?, ?, ?)", wykladowca5_wstaw)
+
+grupa_studencka1_wstaw = (215, "Grupa1", "Informatyka", "Mechaniczno-Elektryczny", "Sztuczna Inteligencja")
+#cursor.execute("INSERT INTO Grupa_studentow VALUES (?, ?, ?, ?, ?)", grupa_studencka1_wstaw)
+grupa_studencka2_wstaw = (115, "Grupa2", "Prawo", "Nauk Humanistycznych", "Historia")
+#cursor.execute("INSERT INTO Grupa_studentow VALUES (?, ?, ?, ?, ?)", grupa_studencka2_wstaw)
+
+przedmiot1_wstaw = ("Sztuczna Inteligencja", "215", "1")
+#cursor.execute("INSERT INTO Przedmiot VALUES (?, ?, ?)", przedmiot1_wstaw)
+przedmiot2_wstaw = ("Matematyka", "215", "2")
+#cursor.execute("INSERT INTO Przedmiot VALUES (?, ?, ?)", przedmiot2_wstaw)
+przedmiot3_wstaw = ("Systemy Wbudowane", "215", "3")
+#cursor.execute("INSERT INTO Przedmiot VALUES (?, ?, ?)", przedmiot3_wstaw)
+przedmiot4_wstaw = ("Prawo", "115", "4")
+#cursor.execute("INSERT INTO Przedmiot VALUES (?, ?, ?)", przedmiot4_wstaw)
+przedmiot5_wstaw = ("Historia", "115", "5")
+#cursor.execute("INSERT INTO Przedmiot VALUES (?, ?, ?)", przedmiot5_wstaw)
+
+student_wstaw1 = (2400, "Adam", "Kownacki", "215")
+#cursor.execute("INSERT INTO Student VALUES (?, ?, ?, ?)", student_wstaw1)
+student_wstaw2 = (2401, "Kacper", "Brzozowski", "215")
+#cursor.execute("INSERT INTO Student VALUES (?, ?, ?, ?)", student_wstaw2)
+student_wstaw3 = (2402, "Piotr", "Tarot", "215")
+#cursor.execute("INSERT INTO Student VALUES (?, ?, ?, ?)", student_wstaw3)
+
+student_wstaw4 = (2403, "Joanna", "Tocka", "115")
+#cursor.execute("INSERT INTO Student VALUES (?, ?, ?, ?)", student_wstaw4)
+student_wstaw5 = (2404, "Krystian", "Falty", "115")
+#cursor.execute("INSERT INTO Student VALUES (?, ?, ?, ?)", student_wstaw5)
+student_wstaw6 = (2405, "Zuzanna", "Rodna", "115")
+#cursor.execute("INSERT INTO Student VALUES (?, ?, ?, ?)", student_wstaw6)
+
+ocena_wstaw1 = (1000, 5, 2400, "Matematyka")
+#cursor.execute("INSERT INTO Ocena VALUES (?, ?, ?, ?)", ocena_wstaw1)
+ocena_wstaw2 = (1001, 3, 2400, "Sztuczna Inteligencja")
+#cursor.execute("INSERT INTO Ocena VALUES (?, ?, ?, ?)", ocena_wstaw2)
+ocena_wstaw3 = (1002, 3, 2400, "Systemy Wbudowane")
+#cursor.execute("INSERT INTO Ocena VALUES (?, ?, ?, ?)", ocena_wstaw3)
+ocena_wstaw4 = (1003, 4, 2401, "Matematyka")
+#cursor.execute("INSERT INTO Ocena VALUES (?, ?, ?, ?)", ocena_wstaw4)
+ocena_wstaw5 = (1004, 5, 2401, "Sztuczna Inteligencja")
+#cursor.execute("INSERT INTO Ocena VALUES (?, ?, ?, ?)", ocena_wstaw5)
+ocena_wstaw6 = (1005, 3, 2401, "Systemy Wbudowane")
+#cursor.execute("INSERT INTO Ocena VALUES (?, ?, ?, ?)", ocena_wstaw6)
+ocena_wstaw7 = (1006, 3, 2402, "Systemy Wbudowane")
+#cursor.execute("INSERT INTO Ocena VALUES (?, ?, ?, ?)", ocena_wstaw7)
+ocena_wstaw8 = (1007, 3, 2402, "Matematyka")
+#cursor.execute("INSERT INTO Ocena VALUES (?, ?, ?, ?)", ocena_wstaw8)
+ocena_wstaw9 = (1008, 3, 2402, "Sztuczna Inteligencja")
+#cursor.execute("INSERT INTO Ocena VALUES (?, ?, ?, ?)", ocena_wstaw9)
+
+ocena_wstaw10 = (1009, 3, 2403, "Prawo")
+#cursor.execute("INSERT INTO Ocena VALUES (?, ?, ?, ?)", ocena_wstaw10)
+ocena_wstaw11 = (1011, 4, 2403, "Historia")
+#cursor.execute("INSERT INTO Ocena VALUES (?, ?, ?, ?)", ocena_wstaw11)
+ocena_wstaw12 = (1012, 5, 2404, "Prawo")
+#cursor.execute("INSERT INTO Ocena VALUES (?, ?, ?, ?)", ocena_wstaw12)
+ocena_wstaw13 = (1013, 3, 2404, "Historia")
+#cursor.execute("INSERT INTO Ocena VALUES (?, ?, ?, ?)", ocena_wstaw13)
+ocena_wstaw14 = (1014, 4, 2405, "Prawo")
+#cursor.execute("INSERT INTO Ocena VALUES (?, ?, ?, ?)", ocena_wstaw14)
+ocena_wstaw15 = (1015, 3, 2405, "Historia")
+#cursor.execute("INSERT INTO Ocena VALUES (?, ?, ?, ?)", ocena_wstaw15)
+###################################################################################
+#Wyswietlanie
+print("\nWszyscy studenci")
+cursor.execute("SELECT * FROM Student")
+dane = cursor.fetchall()
+for student in dane:
+    print(student)
+
+print("\nStudenci grupy 215")
+
+cursor.execute("SELECT * FROM Student where grupa='215'")
+dane = cursor.fetchall()
+for student in dane:
+    print(student)
+
+print("\nStudenci których ocena >4")
+
+cursor.execute(" SELECT Student.id, Student.imie, Student.nazwisko, Ocena.stopien From Student JOIN Ocena on Student.id=Ocena.student where Ocena.stopien>4")
+dane = cursor.fetchall()
+for student in dane:
+    print(student)
+
+print("\nWykladowcy z prowadzonymi przez nich zajeciami")
+
+cursor.execute("SELECT imie, nazwisko, przedmiot from Wykladowca")
+dane = cursor.fetchall()
+for wykladowca in dane:
+    print(wykladowca)
+
+print("\nWydzial z jego grupami studenckimi")
+
+cursor.execute("SELECT Wydzial.nazwa_wydzialu, Grupa_studentow.nazwa_grupy FROM Wydzial JOIN Grupa_studentow ON Wydzial.nazwa_wydzialu = Grupa_studentow.wydzial")
+dane = cursor.fetchall()
+for wydzial in dane:
+    print(wydzial)
+
+print("\nStudenci z srednia ocen")
+
+cursor.execute(" SELECT Student.id, Student.imie, Student.nazwisko, AVG(Ocena.stopien) AS srednia FROM Student JOIN Ocena ON Student.id = Ocena.student GROUP BY Student.id")
+dane = cursor.fetchall()
+for student in dane:
+    print(student)
+
+conn.commit()
+conn.close()
