@@ -1,9 +1,8 @@
-#!/usr/bin/env python3
-
 import cloudscraper
 from bs4 import BeautifulSoup
 
 LINK = "https://www.otodom.pl/pl/wyniki/sprzedaz/mieszkanie/pomorskie/gdynia/gdynia/gdynia?priceMax=600000&viewType=listing"
+FILE = "data.csv"
 
 class Home:
 	def __init__(self, header_name, price, price_for_m2):
@@ -13,6 +12,9 @@ class Home:
 
 	def __str__(self):
 		return f"Nazwa:{self.header_name}, Cena:{self.price}, Cena za metr: {self.price_for_m2}"
+	
+	def to_csv(self):
+		return f"{self.header_name},{self.price},{self.price_for_m2}"
 
 def daj_html_z_linku(link):
 	sc = cloudscraper.create_scraper()
@@ -20,7 +22,7 @@ def daj_html_z_linku(link):
 
 soup = BeautifulSoup(daj_html_z_linku(LINK), 'html.parser')
 
-homes = []
+homes = {}
 
 for listing_item in soup.find_all('article', attrs={"data-cy": "listing-item"}):
 	header_name = listing_item.find('p', attrs={"data-cy": "listing-item-title"}).text
@@ -34,9 +36,11 @@ for listing_item in soup.find_all('article', attrs={"data-cy": "listing-item"}):
 	price_per_meter = span.find('span', class_="css-v14eu1 e1a3ad6s1").text.strip()
 	price_per_meter = price_per_meter.replace("zł/m²", "")
 
-	homes.append(Home(header_name, price, price_per_meter))
+	homes[header_name] = Home(header_name, price, price_per_meter)
 
 
-for home in homes:
-	print(home)
+with open(FILE, "w") as f:
+	f.write("Header name,Price,Price for m2\n")
+	for i, v in homes.items():
+		f.write(v.to_csv() + "\n")
 
